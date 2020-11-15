@@ -1,0 +1,5 @@
+#!/bin/bash
+
+yarn build
+cp -R build/* ../src/main/webapp
+
