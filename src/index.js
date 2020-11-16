@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import Simulation from './components/Simulation/Simulation.jsx';
 import reportWebVitals from './reportWebVitals';
 
 function Square(props) {
@@ -12,7 +13,7 @@ function Square(props) {
   );
 }
 
-class Board extends React.Component {
+class Board extends Component {
   renderSquare(i) {
     return (
       <Square value={this.props.squares[i]} onClick={() => this.props.onClick(i)}/>
@@ -42,7 +43,7 @@ class Board extends React.Component {
   }
 }
 
-class Game extends React.Component {
+class Game extends Component {
   constructor() {
     super();
     this.gameOver = false;
@@ -139,8 +140,8 @@ function calculateWinner(squares) {
 }
 
 ReactDOM.render(<App/>, document.getElementById('root'));
-
 ReactDOM.render(<Game/>, document.getElementById('tic-tac-toe'));
+ReactDOM.render(<Simulation/>, document.getElementById('simulation'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

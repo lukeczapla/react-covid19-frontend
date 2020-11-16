@@ -14,7 +14,6 @@ body {
     margin: auto;
 }
 
-
 .board-row:after {
     clear: both;
     content: "";

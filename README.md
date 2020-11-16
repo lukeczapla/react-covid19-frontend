@@ -1,6 +1,7 @@
 # React Frontend
 
 Code was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The program includes components for infection modelling with the HTML5 canvas and a simple tic-tac-toe example that had some modifications.
 
 ## Available Scripts
 
