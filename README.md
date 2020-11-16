@@ -1,8 +1,9 @@
 # React Frontend
 
+![Screenshot](https://github.com/lukeczapla/react-frontend/blob/master/snapshot.png?raw=true)
+
 Code was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 The program includes components for infection modelling with the HTML5 canvas (react-plotly) and modifications of a simple tic-tac-toe example.
-![Screenshot](https://github.com/lukeczapla/react-frontend/blob/master/snapshot.png?raw=true)
 ## Available Scripts
 
 In the project folder, you can run:
