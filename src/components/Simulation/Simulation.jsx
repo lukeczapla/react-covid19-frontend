@@ -1,4 +1,4 @@
-import React, {Component, useRef, useEffect} from 'react';
+import React, {Component} from 'react'; // {useRef, useEffect} not used
 import Plot from 'react-plotly.js';
 import './Simulation.css';
 
@@ -102,10 +102,10 @@ class Simulation extends Component {
         document.getElementById('info').innerHTML = "Step " + (this.timestep+1) + ": " + healthy+" healthy, " + sick + " sick, and " + better + " recovered";
 
         for (let i = 0; i < this.N; i++) {
-          if (this.people[i][2] == HEALTHY) {
+          if (this.people[i][2] === HEALTHY) {
 
-            for (let j = 0; j < this.N && this.people[i][2] == HEALTHY; j++) {
-                if (this.people[j][2] == INFECTED) {
+            for (let j = 0; j < this.N && this.people[i][2] === HEALTHY; j++) {
+                if (this.people[j][2] === INFECTED) {
                     if (distance(this.people[i], this.people[j]) < 6+this.dist) {
                         if (Math.random() < this.p_i) {
                           if (this.people[i][4]) {
@@ -140,7 +140,7 @@ class Simulation extends Component {
         this.socialT = parseInt(document.getElementById('socialT').value);
 
         this.timestep = 0;
-        this.state.dataY = [];
+        this.setState({dataY: []});
 
         this.canvas = this.cref.current;
         if (this.canvas.getContext) {
@@ -160,7 +160,7 @@ class Simulation extends Component {
                 }
               } while (overlap);
               console.log("done generating");
-              if (i == 0 || Math.random() < this.initialfraction) person[2] = INFECTED;
+              if (i === 0 || Math.random() < this.initialfraction) person[2] = INFECTED;
               //if (socialT == 0 && i != 0 && Math.random() < p_d) person[4] = true;
               this.people.push(person);
 
