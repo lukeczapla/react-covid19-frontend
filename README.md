@@ -1,4 +1,4 @@
-# React Frontend
+# Simulator (React)
 
 ![Screenshot](https://github.com/lukeczapla/react-frontend/blob/master/snapshot.png?raw=true)
 
