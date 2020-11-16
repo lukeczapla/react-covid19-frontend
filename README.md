@@ -2,19 +2,20 @@
 
 ![Screenshot](https://github.com/lukeczapla/react-frontend/blob/master/snapshot.png?raw=true)
 
-Code was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-The program includes components for infection modelling with the HTML5 canvas (react-plotly) and modifications of a simple tic-tac-toe example.
+Code was started with [Create React App](https://github.com/facebook/create-react-app).
+The program includes components for infection modelling with the HTML5 canvas (and graphs with react-plotly) 
+and modifications of a simple tic-tac-toe example.
 ## Available Scripts
 
 In the project folder, you can run:
 
 ### `update`
 
-This is for building the production code and moving it into the main webapp folder for deployment.
+Simple script builds the production code and moves it into the main webapp folder for a website.
 
 ### `yarn start`
 
-Runs the frontend in the development mode.\
+Runs the system in the development mode.\
 Editing will reprocess and serve up the changes.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
