@@ -20,7 +20,9 @@ class Simulation extends Component {
         this.state = {
             startshown: true,
             stopshown: false,
-            makeplot: false
+            makeplot: false,
+            canvasWidth: 600,
+            canvasHeight: 600
         }
         this.cref = React.createRef();
         this.ctx = null;
@@ -74,8 +76,8 @@ class Simulation extends Component {
     animate() {
 
         // this is needed as an override in React because CSS style doesn't affect the canvas dimensions
-        this.ctx.canvas.width = 600;
-        this.ctx.canvas.height = 600;
+        //this.ctx.canvas.width = 600;
+        //this.ctx.canvas.height = 600;
         //console.log("animating " + this.ctx.canvas.width + " " + this.ctx.canvas.height);
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
@@ -210,7 +212,7 @@ class Simulation extends Component {
              <label>Efficacy</label><input type="number" step="0.01" defaultValue="0.8" id="efficacy"/>
              <label>Start at time</label><input type="number" step="1" defaultValue="0" id="socialT"/>
              <br/>
-             <canvas ref={this.cref} className="Sim-window"></canvas>
+             <canvas ref={this.cref} width={this.state.canvasWidth} height={this.state.canvasHeight} className="Sim-window"></canvas>
              <div id="info"></div>
              {this.state.makeplot ? <Plot layout={this.state.layout} data={this.state.data} revision={this.state.revision} /> : null}
              <br/>

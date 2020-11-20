@@ -1,0 +1,29 @@
+
+.board-row:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
+.status {
+    margin-bottom: 10px;
+}
+
+.square {
+    background: #fff;
+    border: 1px solid #999;
+    float: left;
+    font-size: 55px;
+    font-weight: bold;
+    line-height:75px;
+    height: 75px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 75px;
+}
+
+.square:focus {
+    outline: none;
+}
