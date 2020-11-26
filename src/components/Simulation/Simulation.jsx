@@ -110,9 +110,12 @@ class Simulation extends Component {
             this.plot();
         } else {
             this.state.dataY.push(sick+better);
+            if (sick+better > this.max) this.max = sick+better;
         }
 
-        document.getElementById('info').innerHTML = "Step " + (this.timestep+1) + ": " + healthy+" healthy, " + sick + " sick, and " + better + " recovered";
+        this.setState( {info: "Step " + (this.timestep+1) + ": " + healthy + " healthy, " + sick + " sick, and " + better + " recovered"} );
+
+       // document.getElementById('info').innerHTML = "Step " + (this.timestep+1) + ": " + healthy+" healthy, " + sick + " sick, and " + better + " recovered";
 
         for (let i = 0; i < this.N; i++) {
           if (this.people[i][2] === HEALTHY) {
@@ -180,7 +183,7 @@ class Simulation extends Component {
             }
 
             //if (nographics) simulateSteps(1100);
-            this.timer = window.setInterval(()=>this.animate(), 200);
+            this.timer = setInterval(()=>this.animate(), 200);
             this.setState({
                 startshown: false,
                 stopshown: true
@@ -189,7 +192,7 @@ class Simulation extends Component {
     }
 
     stopSimulation() {
-        window.clearInterval(this.timer);
+        clearInterval(this.timer);
         this.people.length = 0;
         this.setState({
             startshown: true,
@@ -213,11 +216,11 @@ class Simulation extends Component {
              <label>Start at time</label><input type="number" step="1" defaultValue="0" id="socialT"/>
              <br/>
              <canvas ref={this.cref} width={this.state.canvasWidth} height={this.state.canvasHeight} className="Sim-window"></canvas>
-             <div id="info"></div>
-             {this.state.makeplot ? <Plot layout={this.state.layout} data={this.state.data} revision={this.state.revision} /> : null}
-             <br/>
+             <div id="info">{this.state.info}</div>
              {this.state.startshown ? <button onClick={() => this.runSimulation()}>Start Simulation</button> : null}
              {this.state.stopshown ? <button onClick={() => this.stopSimulation()}>Stop Simulation</button> : null}
+             <br/>
+             {this.state.makeplot ? <Plot layout={this.state.layout} data={this.state.data} revision={this.state.revision} /> : null}
             </div>
         );
     }

@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap');
+
+.numberInput {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 28px;
+  padding: 8px 15px;
+  border: 0;
+  border-radius: 4px;
+  color: #333;
+}
