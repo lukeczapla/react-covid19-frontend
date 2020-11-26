@@ -3,13 +3,16 @@ import './App.css';
 import React, { Component, useState } from 'react';
 //import ReactDOM from 'react-dom';
 
-import CurrencyField from './components/CurrencyField/CurrencyField.jsx';
-import PersonList from './components/PersonList/PersonList.jsx';
-import CaseList from './components/CaseList/CaseList.jsx';
-import CaseForm from './components/CaseForm/CaseForm.jsx';
-import PersonInfo from './components/PersonInfo/PersonInfo.jsx';
-import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import CurrencyField from './components/CurrencyField/CurrencyField';
+import Game from './components/Game/Game.jsx';
+import Simulation from './components/Simulation/Simulation.jsx';
 
+import PersonList from './components/PersonList/PersonList';
+import CaseList from './components/CaseList/CaseList';
+import CaseForm from './components/CaseForm/CaseForm';
+import PersonInfo from './components/PersonInfo/PersonInfo';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import { ApiContext } from './api-context';
 
 const HelloDialog = ({name, picture}) => {
     return (
@@ -40,6 +43,8 @@ const Login = ({onLoad, onEmpty}) => {
 
 
 class App extends Component {
+
+  static contextType = ApiContext;
 
   constructor(props) {
     super(props);
@@ -112,7 +117,8 @@ class App extends Component {
         "socialId": data.profileObj.googleId,
         "tokenId" : data.tokenId
     };
-    fetch('http://localhost:8080/conf/user',
+    const {userlogin} = this.context;
+    fetch(userlogin,
          {headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
           method: 'POST', credentials: 'include', body: JSON.stringify(user)})
     .then((info) => {
@@ -125,7 +131,8 @@ class App extends Component {
   }
 
   emptyFunction = () => {
-    fetch('http://localhost:8080/conf/user', { method: 'DELETE' });
+    const {userlogin} = this.context;
+    fetch(userlogin, { method: 'DELETE' });
     this.setState({profile: null, cases: [], people: []});
   };
 
@@ -136,6 +143,8 @@ class App extends Component {
   }
 
   render() {
+          console.log(this.context);
+
       return (
         <div className="App">
           <header className="App-header">
@@ -150,20 +159,20 @@ class App extends Component {
             {this.state.profile === null ? <div>Not logged in</div> : <div>Logged in</div>}
             {this.state.profile !== null ? <HelloDialog name={this.state.profile.givenName} picture={this.state.profile.imageUrl}/>: null}
           </header>
-          {this.state.profile !== null ? <PersonList name="personList1" onFetch={this.loadPeople} onChange={this.inputChanged} v={this.state.v}/> : null}
+          {this.state.profile !== null ? <PersonList name="personList1" value={this.state.personList1} onFetch={this.loadPeople} onChange={this.inputChanged} v={this.state.v}/> : null}
           {this.state.profile !== null ? <CaseList name="caseList1" onFetch={this.loadCases} onChange={this.inputChanged} v={this.state.v}/> : null}
           <PersonInfo name="PersonInfo" person={this.state.personInfo} cases={this.state.cases}/>
-          {this.state.people.length > 0 ? <PersonList name="personList2" people={this.state.people} onChange={this.inputChanged} /> : null}
+          {this.state.people.length > 0 ? <PersonList name="personList2" value={this.state.personList2} people={this.state.people} onChange={this.inputChanged} /> : null}
           <button onClick={this.refresh}>Refresh Data</button>
           <label><input type="checkbox" id="showclosed" onChange={this.inputChanged} checked={this.state.showClosed} name="showClosed"/>Show closed cases
-          {this.state.cases.length > 0 ? <CaseList name="caseSelect" showClosed={this.state.showClosed} onChange={this.inputChanged} cases={this.state.cases}/>: null}</label>
+          {this.state.cases.length > 0 ? <CaseList name="caseSelect" value={this.state.caseSelect} showClosed={this.state.showClosed} onChange={this.inputChanged} cases={this.state.cases}/>: null}</label>
           {this.state.people.length > 0 ? <CaseForm addName={this.addName} cases={this.state.cases} people={this.state.people} />: null}
 
           <p>Pandemic Simulation Demo</p>
-          <div id="simulation"></div>
+          <Simulation/>
           <hr/>
           <p>How about a nice game of tic-tac-toe?</p>
-          <div id="tic-tac-toe"></div>
+          <Game/>
           <div className="App-body">
             <CurrencyField/>
           </div>

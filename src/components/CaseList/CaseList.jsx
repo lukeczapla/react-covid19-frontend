@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect, useContext } from 'react';
+import {ApiContext} from '../../api-context';
 
 const CaseList = (props) => {
     const [cases, setCases] = useState([]);
-    const [selected, setSelected] = useState(1);
+    const api = useContext(ApiContext);
+    //const [selected, setSelected] = useState(1);
 
     const inputChanged = (e) => {
-      setSelected(e.target.value);
+      //setSelected(e.target.value);
       //console.log(e.target.value);
 
       if (props.onChange) {
@@ -16,10 +17,10 @@ const CaseList = (props) => {
 
     useEffect(() => {
         if (props.cases !== undefined) {
-          if (cases.length === 0) setSelected(props.cases[0].id);
+          //if (cases.length === 0) setSelected(props.cases[0].id);
           setCases(props.cases);
         }
-        else fetch('http://localhost:8080/getcases', {
+        else fetch(api.getcases, {
           method: 'GET',
           credentials: 'include',
           headers: {'Content-Type': 'application/json'}
@@ -28,7 +29,7 @@ const CaseList = (props) => {
         .then(data => {
             //data.sort((a, b) => (a.lastName === b.lastName) ? ((a.firstName > b.firstName) ? 1 : -1) : ((a.lastName > b.lastName) ? 1 : -1));
             data.reverse();
-            if (cases.length === 0) setSelected(data[0].id);
+            //if (cases.length === 0) setSelected(data[0].id);
             setCases(data);
             if (props.onFetch !== undefined) props.onFetch(data);
             console.log("refreshed cases");
@@ -38,10 +39,9 @@ const CaseList = (props) => {
         //else console.log(cases);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.v, props.cases]);
-
     return (
         <div>
-        {cases.length > 0 ? <select name={props.name} value={selected} onChange={inputChanged}>
+        {cases.length > 0 ? <select name={props.name} value={props.value} onChange={inputChanged}>
             {cases.filter((ccase) => !ccase.resolved || props.showClosed).map((ccase) => (
                 <option key={ccase.id} value={ccase.id}>{(ccase.resolved ? "[CLOSED] " : "") + ccase.id + " "
                  + ccase.primaryStudent.lastName + ", " + ccase.primaryStudent.firstName + " "
