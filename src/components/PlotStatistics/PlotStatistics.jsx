@@ -150,6 +150,7 @@ const PlotStatistics = ({cases}) => {
 
     return (
         <div>
+            <h3>Case Reporting Graphs/Visualization</h3>
             Number of days to go back<input type="number" step="1" name="Ndays" value={state.Ndays} onChange={inputChanged}/><br/>
             Confirmation:
               <table>

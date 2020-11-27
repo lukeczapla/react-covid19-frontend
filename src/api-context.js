@@ -41,4 +41,4 @@ export const configs = {
     }
 }
 
-export const ApiContext = createContext(configs.testing);
+export const ApiContext = createContext(configs.production);

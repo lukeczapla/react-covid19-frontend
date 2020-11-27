@@ -3,6 +3,7 @@ import './CaseForm.css';
 import PersonList from '../PersonList/PersonList';
 import CaseList from '../CaseList/CaseList';
 import PersonInfo from '../PersonInfo/PersonInfo';
+import SecondarySelect from '../SecondarySelect/SecondarySelect';
 import {ApiContext} from '../../api-context';
 
 class CaseForm extends React.Component {
@@ -13,9 +14,22 @@ class CaseForm extends React.Component {
     super(props);
     this.state = {
         disabled: false,
+        secondaries: {},
         caseId: '',
+        selectedOptions: [],
+        secondaryAdded: [],
+        secondarySelected: '',
         caseSelect: this.props.cases[0].id,
         showClosed: false,
+        exposedClassOutside: false,
+        exposedClassOutsideFirst: false,
+        exposedClass: false,
+        exposedClassFirst: false,
+        exposedBus: false,
+        exposedBusFirst: false,
+        exposedCarpool: false,
+        exposedOutside: false,
+
         preparedBy: '',
         primaryStudent: props.people[0].id,
         exposureType: 0,
@@ -63,6 +77,115 @@ class CaseForm extends React.Component {
     };
   }
 
+  selectChanged = (e) => {
+    console.log(e.target.selectedOptions);
+    let value = Array.from(e.target.selectedOptions, option => option.value);
+    console.log(value);
+    this.setState({selectedOptions: value});
+  }
+
+  secondaryChanged = (e) => {
+    let value = e.target.value;
+    console.log('changing value ' + value);
+    if (this.state.secondarySelected !== '') {
+        let s = {
+            exposedClassOutside: this.state.exposedClassOutside,
+            exposedClassOutsideFirst: this.state.exposedClassOutsideFirst,
+            exposedClass: this.state.exposedClass,
+            exposedClassFirst: this.state.exposedClassFirst,
+            exposedBus: this.state.exposedBus,
+            exposedBusFirst: this.state.exposedBusFirst,
+            exposedOutside: this.state.exposedOutside,
+            exposedCarpool: this.state.exposedCarpool
+        }
+        let secs = this.state.secondaries;
+        secs[this.state.secondarySelected] = s;
+        let s2 = this.state.secondaries[value];
+        this.setState({
+            exposedClassOutside: s2.exposedClassOutside,
+            exposedClassOutsideFirst: s2.exposedClassOutsideFirst,
+            exposedClass: s2.exposedClass,
+            exposedClassFirst: s2.exposedClassFirst,
+            exposedBus: s2.exposedBus,
+            exposedBusFirst: s2.exposedBusFirst,
+            exposedOutside: s2.exposedOutside,
+            exposedCarpool: s2.exposedCarpool,
+            secondaries: secs
+        });
+    }
+    //console.log(this.state.secondaries);
+    //console.log(this.state);
+    this.setState({secondarySelected: value});
+  }
+
+  addSecondary = () => {
+    this.state.secondaryAdded.push(...this.state.selectedOptions);
+    let s = this.state.secondaries;
+    this.state.selectedOptions.forEach(value => {
+      s[value] = {
+        exposedClassOutside: false,
+        exposedClassOutsideFirst: false,
+        exposedClass: false,
+        exposedClassFirst: false,
+        exposedBus: false,
+        exposedBusFirst: false,
+        exposedCarpool: false,
+        exposedOutside: false
+      }
+    });
+    this.setState({
+        secondaryAdded: this.state.secondaryAdded,
+        selectedOptions: [],
+        secondaries: s
+    });
+    if (this.state.secondaryAdded.length > 0 && this.state.secondarySelected === '') {
+        this.setState({secondarySelected: this.state.secondaryAdded[0]});
+    }
+  }
+
+  removeSecondary = () => {
+    //needed to use local variables because state is updated asynchronously
+    if (this.state.secondarySelected === '') return;
+    delete this.state.secondaries.[this.state.secondarySelected];
+    let s = this.state.secondaryAdded.filter(value => value !== this.state.secondarySelected);
+    this.setState({
+        secondaryAdded: s
+    });
+    let v = (s.length === 0 ? '': s[0]);
+    this.setState({
+        secondarySelected: v
+    });
+    console.log(v);
+    console.log(this.state.secondaries);
+    if (v !== '') {
+        let s = this.state.secondaries[v];
+        this.setState({
+            exposedClassOutside: s.exposedClassOutside,
+            exposedClassOutsideFirst: s.exposedClassOutsideFirst,
+            exposedClass: s.exposedClass,
+            exposedClassFirst: s.exposedClassFirst,
+            exposedBus: s.exposedBus,
+            exposedBusFirst: s.exposedBusFirst,
+            exposedOutside: s.exposedOutside,
+            exposedCarpool: s.exposedCarpool,
+        });
+    }
+  }
+
+  exposedPropChanged = (event) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    this.setState({
+      [name] : value
+    });
+    // update the property in case next action is a submit
+    if (this.state.secondarySelected !== '') {
+        let s = this.state.secondaries[this.state.secondarySelected];
+        s.[name] = value;
+    }
+    //console.log(name + " " + value);
+  }
 
   inputChanged = (event) => {
     const target = event.target;
@@ -89,7 +212,7 @@ class CaseForm extends React.Component {
   }
 */
   clearCaseData = () => {
-    console.log(this.state);
+    //console.log(this.state);
     this.setState({
         caseId : '',
         preparedBy: '',
@@ -527,7 +650,7 @@ class CaseForm extends React.Component {
                 <option value="5">Positive, PCR test</option>
                 <option value="6">Negative, Antigen (rapid) test</option>
                 <option value="7">Positive, Antigen (rapid) test</option>
-            </select>Date <input type="date" onChange={this.inputChanged} name="testDate" value={this.state.testDate}/></label><br/>
+            </select> Date <input type="date" onChange={this.inputChanged} name="testDate" value={this.state.testDate}/></label><br/>
           <label>COVID-19 Test Result 2 <select id="testresult2" name="testResult2" onChange={this.inputChanged} value={this.state.testResult2}>
                 <option value="1">Not available</option>
                 <option value="2">Negative, Unknown test type</option>
@@ -536,7 +659,7 @@ class CaseForm extends React.Component {
                 <option value="5">Positive, PCR test</option>
                 <option value="6">Negative, Antigen (rapid) test</option>
                 <option value="7">Positive, Antigen (rapid) test</option>
-             </select>Date <input type="date" onChange={this.inputChanged} name="testDate2" value={this.state.testDate2}/></label><br/>
+             </select> Date <input type="date" onChange={this.inputChanged} name="testDate2" value={this.state.testDate2}/></label><br/>
            <label>COVID-19 Test Result 3 <select id="testresult3" name="testResult3" onChange={this.inputChanged} value={this.state.testResult3}>
                 <option value="1">Not available</option>
                 <option value="2">Negative, Unknown test type</option>
@@ -545,8 +668,14 @@ class CaseForm extends React.Component {
                 <option value="5">Positive, PCR test</option>
                 <option value="6">Negative, Antigen (rapid) test</option>
                 <option value="7">Positive, Antigen (rapid) test</option>
-              </select>Date <input type="date" onChange={this.inputChanged} name="testDate3" value={this.state.testDate3}/></label><br/>
+              </select> Date <input type="date" onChange={this.inputChanged} name="testDate3" value={this.state.testDate3}/></label><br/>
            <label>NOTES/COMMENTS<br/><textarea rows="4" cols="69" onChange={this.inputChanged} name="notes" value={this.state.notes}></textarea></label><br/>
+           <SecondarySelect selectedPeople={this.state.selectedOptions} secondaryAdded={this.state.secondaryAdded} secondaryChanged={this.secondaryChanged}
+                secondarySelected={this.state.secondarySelected} people={this.props.people} addSecondary={this.addSecondary} removeSecondary={this.removeSecondary}
+                exposedClass={this.state.exposedClass} exposedClassFirst={this.state.exposedClassFirst}
+                exposedClassOutside={this.state.exposedClassOutside} exposedClassOutsideFirst={this.state.exposedClassOutsideFirst}
+                exposedBus={this.state.exposedBus} exposedBusFirst={this.state.exposedBusFirst}
+                exposedOutside={this.state.exposedOutside} exposedCarpool={this.state.exposedCarpool} secondaryPropChange={this.exposedPropChanged} selectChanged={this.selectChanged}/>
            <label><input type="checkbox" id="admincase" onChange={this.inputChanged} checked={this.state.administrativeCase} name="administrativeCase"/>
              <b>ADMINISTRATIVE CASE, NOT ILLNESS RELATED (leave notes/comments above)</b></label><br/>
            <label><input type="checkbox" id="followup" name="followup" onChange={this.inputChanged} checked={this.state.followup} />
