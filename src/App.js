@@ -153,7 +153,7 @@ class App extends Component {
           <header className="App-header">
             <img src={logo} width="200" height="200" className="App-logo" alt="logo" />
             <p>
-              Simulation Demo
+              COVID Tracking and Simulation Demo
             </p>
             <Login onLoad={this.loadFunction} onEmpty={this.emptyFunction} />
             {this.state.profile === null ? <div>Not logged in</div> : <div>Logged in</div>}
