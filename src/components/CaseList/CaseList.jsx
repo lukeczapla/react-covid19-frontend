@@ -7,9 +7,6 @@ const CaseList = (props) => {
     //const [selected, setSelected] = useState(1);
 
     const inputChanged = (e) => {
-      //setSelected(e.target.value);
-      //console.log(e.target.value);
-
       if (props.onChange) {
         props.onChange(e);
       }
@@ -40,16 +37,16 @@ const CaseList = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.v, props.cases]);
     return (
-        <div>
-        {cases.length > 0 ? <select name={props.name} value={props.value} onChange={inputChanged}>
+        <>
+          {cases.length > 0 ? <select name={props.name} value={props.value} onChange={inputChanged}>
+            {props.defaultEmpty ? <option key="0" value="0">{props.defaultEmpty}</option> : null}
             {cases.filter((ccase) => !ccase.resolved || props.showClosed).map((ccase) => (
                 <option key={ccase.id} value={ccase.id}>{(ccase.resolved ? "[CLOSED] " : "") + ccase.id + " "
                  + ccase.primaryStudent.lastName + ", " + ccase.primaryStudent.firstName + " "
                  + new Date(ccase.requiredDate).toISOString().slice(0,10)
                  + (ccase.followup && !ccase.resolved ? " follow-up by " + new Date(ccase.followupDate).toISOString().slice(0,10): "")}</option>
-            ))}
-        </select> : null}
-        </div>
+            ))}</select> : null}
+        </>
     );
 
 }

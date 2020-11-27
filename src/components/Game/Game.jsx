@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import './Game.css';
 
+// modified from a basic react example in create-react-app
 function Square(props) {
   return (
     <button className="square" onClick={props.onClick}>

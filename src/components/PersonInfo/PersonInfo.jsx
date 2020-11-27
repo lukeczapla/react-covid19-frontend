@@ -8,7 +8,7 @@ const PersonInfo = ({name, person, cases}) => {
     if (person.grade === 13) gr = "Faculty/Staff";
     else if (person.grade === 14) gr = "Associate (" + person.classes + ")";
     else {
-      pr = <div>{"Parent 1: " + person.parent1}<br/>{"Parent 2: " + person.parent2}<br/></div>
+      pr = <>{"Parent 1: " + person.parent1}<br/>{"Parent 2: " + person.parent2}<br/></>
     }
     return (
         <div name={name}>
@@ -18,13 +18,13 @@ const PersonInfo = ({name, person, cases}) => {
             {person.grade !== 14 ? person.homeAddress : "Email: " + person.email}<br/>
             {"Home Phone: " + person.homePhone}<br/>
             {pr}
-            <b>All Related Cases/Incidents</b><br/>
-            <ol>
+            <b>All Related Cases/Incidents</b>
+            <ul>
             {cases.filter((ccase) => ccase.primaryStudent.id === person.id).map((ccase) => (
-                <li>{"Case " + ccase.id + " required on date " + new Date(ccase.requiredDate).toUTCString().slice(5,16)
+                <li key={ccase.id}>{"Case " + ccase.id + " required on date " + new Date(ccase.requiredDate).toUTCString().slice(5,16)
                    + (ccase.followup ? " follow-up by " + new Date(ccase.followupDate).toUTCString().slice(5, 16) : "")} </li>
             ))}
-            </ol>
+            </ul>
         </div>
     );
 

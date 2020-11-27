@@ -9,6 +9,10 @@
     margin-bottom: 10px;
 }
 
+.game-board {
+    display: inline-block
+}
+
 .square {
     background: #fff;
     border: 1px solid #999;
@@ -27,3 +31,4 @@
 .square:focus {
     outline: none;
 }
+

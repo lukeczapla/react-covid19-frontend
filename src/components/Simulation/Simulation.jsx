@@ -15,8 +15,8 @@ function distance(t, other) {
 }
 
 class Simulation extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             startshown: true,
             stopshown: false,
@@ -215,7 +215,7 @@ class Simulation extends Component {
              <label>Efficacy</label><input type="number" step="0.01" defaultValue="0.8" id="efficacy"/>
              <label>Start at time</label><input type="number" step="1" defaultValue="0" id="socialT"/>
              <br/>
-             <canvas ref={this.cref} width={this.state.canvasWidth} height={this.state.canvasHeight} className="Sim-window"></canvas>
+             <canvas ref={this.cref} width={this.state.canvasWidth} height={this.state.canvasHeight} className="sim-window"></canvas>
              <div id="info">{this.state.info}</div>
              {this.state.startshown ? <button onClick={() => this.runSimulation()}>Start Simulation</button> : null}
              {this.state.stopshown ? <button onClick={() => this.stopSimulation()}>Stop Simulation</button> : null}

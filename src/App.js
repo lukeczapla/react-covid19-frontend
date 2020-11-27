@@ -11,6 +11,7 @@ import PersonList from './components/PersonList/PersonList';
 import CaseList from './components/CaseList/CaseList';
 import CaseForm from './components/CaseForm/CaseForm';
 import PersonInfo from './components/PersonInfo/PersonInfo';
+import PlotStatistics from './components/PlotStatistics/PlotStatistics';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { ApiContext } from './api-context';
 
@@ -78,22 +79,27 @@ class App extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log(name);
     this.setState({
       [name]: value
     });
     if (name === 'personList1') {
-        let person = this.state.people.filter(person => person.id === parseInt(value))[0];
-        this.setState({
-            personInfo: person
-        });
+        if (value == 0) this.setState({personInfo: null});
+        else {
+            let person = this.state.people.filter(person => person.id == value)[0];
+            this.setState({
+                personInfo: person
+            });
+        }
     }
     if (name === 'caseList1') {
-        let ccase = this.state.cases.filter(ccase => ccase.id === parseInt(value))[0];
-        let person = this.state.people.filter(person => person.id === ccase.primaryStudent.id)[0];
-        this.setState({
-            personInfo: person
-        });
+        if (value == 0) this.setState({personInfo: null});
+        else {
+            let ccase = this.state.cases.filter(ccase => ccase.id == value)[0];
+            let person = this.state.people.filter(person => person.id === ccase.primaryStudent.id)[0];
+            this.setState({
+                personInfo: person
+            });
+        }
     }
   }
 
@@ -122,7 +128,6 @@ class App extends Component {
          {headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
           method: 'POST', credentials: 'include', body: JSON.stringify(user)})
     .then((info) => {
-        console.log(info);
         this.setState({profile: data.profileObj});
     }).catch((error) => {
         console.log(error);
@@ -143,38 +148,31 @@ class App extends Component {
   }
 
   render() {
-          console.log(this.context);
-
       return (
         <div className="App">
           <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
+            <img src={logo} width="200" height="200" className="App-logo" alt="logo" />
             <p>
               Simulation Demo
             </p>
-            <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-              Built with React
-            </a>
             <Login onLoad={this.loadFunction} onEmpty={this.emptyFunction} />
             {this.state.profile === null ? <div>Not logged in</div> : <div>Logged in</div>}
             {this.state.profile !== null ? <HelloDialog name={this.state.profile.givenName} picture={this.state.profile.imageUrl}/>: null}
           </header>
-          {this.state.profile !== null ? <PersonList name="personList1" value={this.state.personList1} onFetch={this.loadPeople} onChange={this.inputChanged} v={this.state.v}/> : null}
-          {this.state.profile !== null ? <CaseList name="caseList1" onFetch={this.loadCases} onChange={this.inputChanged} v={this.state.v}/> : null}
-          <PersonInfo name="PersonInfo" person={this.state.personInfo} cases={this.state.cases}/>
-          {this.state.people.length > 0 ? <PersonList name="personList2" value={this.state.personList2} people={this.state.people} onChange={this.inputChanged} /> : null}
+          <div className='App-body'>
+          <b>Find Person Information by name or by case</b><br/>
+          {this.state.profile !== null ? <PersonList defaultEmpty='--- SELECT A PERSON ---' name="personList1" value={this.state.personList1} onFetch={this.loadPeople} onChange={this.inputChanged} v={this.state.v}/> : null}
+          {this.state.profile !== null ? <CaseList defaultEmpty='--- SELECT A CASE ---' name="caseList1" onFetch={this.loadCases} onChange={this.inputChanged} v={this.state.v}/> : null}
+          <br/><PersonInfo name="PersonInfo" person={this.state.personInfo} cases={this.state.cases}/>
           <button onClick={this.refresh}>Refresh Data</button>
-          <label><input type="checkbox" id="showclosed" onChange={this.inputChanged} checked={this.state.showClosed} name="showClosed"/>Show closed cases
-          {this.state.cases.length > 0 ? <CaseList name="caseSelect" value={this.state.caseSelect} showClosed={this.state.showClosed} onChange={this.inputChanged} cases={this.state.cases}/>: null}</label>
-          {this.state.people.length > 0 ? <CaseForm addName={this.addName} cases={this.state.cases} people={this.state.people} />: null}
-
-          <p>Pandemic Simulation Demo</p>
+          {this.state.people.length > 0 ? <CaseForm addName={this.addName} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />: null}
+          <PlotStatistics cases={this.state.cases}/>
+          <h4>Pandemic Simulation Demo</h4>
           <Simulation/>
           <hr/>
           <p>How about a nice game of tic-tac-toe?</p>
           <Game/>
-          <div className="App-body">
-            <CurrencyField/>
+          <CurrencyField/>
           </div>
           <footer>Luke Czapla</footer>
         </div>
