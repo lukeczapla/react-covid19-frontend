@@ -24,7 +24,7 @@ const HelloDialog = ({name, picture}) => {
 const Login = ({onLoad, onEmpty}) => {
     const [hideLogin, setHideLogin] = useState(false);
     const onSuccess = (user) => {
-        //console.log(user);
+        //  console.log(user);
         setHideLogin(true);
         onLoad(user);
     }, onLogoutSuccess = () => {
