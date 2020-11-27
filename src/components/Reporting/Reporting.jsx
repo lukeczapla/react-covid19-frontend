@@ -4,8 +4,7 @@ import {ApiContext} from '../../api-context';
 function DownloadButton(props) {
 
     const clickLink = (e) => {
-        const name=props.name;
-        fetch(props.url, {method: 'GET', headers: {'Content-Disposition': 'attachment; filename="'+name+'"'}, credentials: 'include'})
+        fetch(props.url, {method: 'GET', credentials: 'include'})
         .then(response => response.blob())
         .then(blob => {
             let url = window.URL.createObjectURL(blob);

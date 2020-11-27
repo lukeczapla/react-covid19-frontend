@@ -3,7 +3,6 @@ import './App.css';
 import React, { Component, useState } from 'react';
 //import ReactDOM from 'react-dom';
 
-import CurrencyField from './components/CurrencyField/CurrencyField';
 import Game from './components/Game/Game.jsx';
 import Simulation from './components/Simulation/Simulation.jsx';
 
@@ -169,13 +168,13 @@ class App extends Component {
           {this.state.people.length > 0 ? <CaseForm addName={this.addName} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />: null}
           <PlotStatistics cases={this.state.cases}/>
           <Reporting/>
+          <br/><br/>
           <hr/>
           <h4>Pandemic Simulation Demo</h4>
           <Simulation/>
           <hr/>
           <p>How about a nice game of tic-tac-toe?</p>
           <Game/>
-          <CurrencyField/>
           </div>
           <footer>Luke Czapla</footer>
         </div>

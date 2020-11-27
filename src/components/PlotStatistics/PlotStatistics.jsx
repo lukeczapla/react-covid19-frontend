@@ -44,12 +44,6 @@ const PlotStatistics = ({cases}) => {
     const plotTimeSeries = () => {
         let markersize = 8;
         let fontsize = 14;
-    //    if ($("#hires").is(":checked")) {
-    //        $("#graph").css("width", "1200px");
-    //        $("#graph").css("height", "1200px");
-    //        markersize = 24;
-    //        fontsize = 16;
-    //    }
         let today = new Date();
         let Ndays = parseInt(state.Ndays);
         let daylist = generateDays(Ndays, today);
