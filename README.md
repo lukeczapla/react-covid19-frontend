@@ -1,10 +1,8 @@
 # COVID Tracing and Demo Simulator
-![Screenshot](https://github.com/lukeczapla/react-frontend/blob/master/graph-cases.png?raw=true)
 ![Screenshot](https://github.com/lukeczapla/react-frontend/blob/master/snapshot.png?raw=true)
 
 Code was created with React.
-The program includes components for infection modelling with the HTML5 canvas (and graphs with react-plotly) 
-and modifications of a simple tic-tac-toe example.
+The program includes database frontend and components for infection modelling with the HTML5 canvas (and graphs with react-plotly).
 ## Available Scripts
 
 In the project folder, you can run:
