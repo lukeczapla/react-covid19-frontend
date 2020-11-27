@@ -15,6 +15,11 @@
   }
 }
 
+a:link {
+    color: #33FF88;
+
+}
+
 #tic-tac-toe {
     display: flex;
     flex-direction: row;

@@ -12,6 +12,7 @@ import CaseList from './components/CaseList/CaseList';
 import CaseForm from './components/CaseForm/CaseForm';
 import PersonInfo from './components/PersonInfo/PersonInfo';
 import PlotStatistics from './components/PlotStatistics/PlotStatistics';
+import Reporting from './components/Reporting/Reporting';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { ApiContext } from './api-context';
 
@@ -167,6 +168,8 @@ class App extends Component {
           <button onClick={this.refresh}>Refresh Data</button>
           {this.state.people.length > 0 ? <CaseForm addName={this.addName} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />: null}
           <PlotStatistics cases={this.state.cases}/>
+          <Reporting/>
+          <hr/>
           <h4>Pandemic Simulation Demo</h4>
           <Simulation/>
           <hr/>
