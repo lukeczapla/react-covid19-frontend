@@ -86,7 +86,7 @@ class CaseForm extends React.Component {
 
   secondaryChanged = (e) => {
     let value = e.target.value;
-    console.log('changing value ' + value);
+    //console.log('changing value ' + value);
     if (this.state.secondarySelected !== '') {
         let s = {
             exposedClassOutside: this.state.exposedClassOutside,
@@ -179,7 +179,7 @@ class CaseForm extends React.Component {
     this.setState({
       [name] : value
     });
-    // update the property in case next action is a submit
+    // update the property in case the next action is a submit
     if (this.state.secondarySelected !== '') {
         let s = this.state.secondaries[this.state.secondarySelected];
         s.[name] = value;
@@ -200,17 +200,7 @@ class CaseForm extends React.Component {
     if (name === 'primaryStudent') this.setState({ personInfo: null })
     console.log(name + " " + value);
   }
-/*
-  getPrimaryPerson = (data) => {
-    const target = data.target;
-    const value = target.value;
-    const name = target.name;
-    console.log(target.name + " " + value);
-    this.setState({
-      primaryStudent: value
-    });
-  }
-*/
+
   clearCaseData = () => {
     //console.log(this.state);
     this.setState({
