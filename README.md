@@ -3,7 +3,7 @@
 
 Code was created with React.
 The program includes database frontend along with some interesting components for infection modelling with \
-the HTML5 canvas (and graphs with react-plotly). The database backend is not provided due to currently being deployed,
+the HTML5 canvas (and graphs with react-plotly). The database backend is not provided due to currently being deployed, \
 though it would certainly be possible to set it up for other institutions with similar needs.
 
 ## Available Scripts
