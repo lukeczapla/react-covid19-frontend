@@ -252,6 +252,16 @@ class CaseForm extends React.Component {
     });
   }
 
+  deleteCase = () => {
+    const {deletecase} = this.context;
+    fetch(deletecase+this.state.caseSelect, { method: 'DELETE', credentials: 'include' })
+    .then(response => response.text())
+    .then(data => {
+        if (this.props.onDelete) this.props.onDelete();
+        alert('Deleted case ' + this.state.caseSelect);
+    });
+  }
+
   loadCase = () => {
     let ccase = this.props.cases.filter(c => c.id == this.state.caseSelect)[0];
     this.setState({
@@ -456,7 +466,7 @@ class CaseForm extends React.Component {
         <div className='case-form'>
           <label><input type="checkbox" id="showclosed" onChange={this.inputChanged} checked={this.state.showClosed} name="showClosed"/>Show closed cases
           {this.props.cases.length > 0 ? <><CaseList name="caseSelect" value={this.state.caseSelect} showClosed={this.state.showClosed} onChange={this.inputChanged} cases={this.props.cases}/>
-            <button onClick={this.loadCase}>Load Case</button></>: null}</label><br/>
+            <button onClick={this.loadCase}>Load Case</button><button onClick={this.deleteCase}>Delete Case</button></>: null}</label><br/>
           <button onClick={this.clearCaseData}>Clear Form</button><br/>
           <label>Prepared by (name, add after previous name if updating):
             <input type="text" size="30" value={this.state.preparedBy} onChange={this.inputChanged} name="preparedBy"/>

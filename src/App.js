@@ -165,7 +165,7 @@ class App extends Component {
           {this.state.profile !== null ? <CaseList defaultEmpty='--- SELECT A CASE ---' name="caseList1" onFetch={this.loadCases} onChange={this.inputChanged} v={this.state.v}/> : null}
           <br/><PersonInfo name="PersonInfo" person={this.state.personInfo} cases={this.state.cases}/>
           <button onClick={this.refresh}>Refresh Data</button>
-          {this.state.people.length > 0 ? <CaseForm addName={this.addName} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />: null}
+          {this.state.people.length > 0 ? <CaseForm addName={this.addName} onDelete={this.refresh} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />: null}
           <PlotStatistics cases={this.state.cases}/>
           <Reporting/>
           <br/><br/>
