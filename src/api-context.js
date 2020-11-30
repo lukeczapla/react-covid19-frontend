@@ -2,23 +2,23 @@ import {createContext} from 'react';
 
 export const configs = {
     testing: {
-        userlogin: 'http://localhost:8080/conf/user',
-        getcases: 'http://localhost:8080/getcases',
-        getpeople: 'http://localhost:8080/getstudents',
-        addcase: 'http://localhost:8080/addcase',
-        editcase: 'http://localhost:8080/editcase/',
-        updatecase: 'http://localhost:8080/updatecase',
-        deletecase: 'http://localhost:8080/deletecase/',
-        getsecondarys: 'http://localhost:8080/getsecondarys',
-        addsecondary: 'http://localhost:8080/addsecondary',
-        editsecondary: 'http://localhost:8080/editsecondary/',
-        deletesecondary: 'http://localhost:8080/deletesecondary',
-        urgentxlsx: 'http://localhost:8080/urgentcases/urgent.xlsx',
-        openxlsx: 'http://localhost:8080/opencases/open.xlsx',
-        blockedxlsx: 'http://localhost:8080/blockedcases/blocked.xlsx',
-        awaitingxlsx: 'http://localhost:8080/awaitingcases/awaiting.xlsx',
-        overviewxlsx: 'http://localhost:8080/caseoverview/cases.xlsx',
-        exposedxlsx: 'http://localhost:8080/exposedoverview/exposed.xlsx',
+        userlogin: 'http://localhost:8080/conf/user',  // POST
+        getcases: 'http://localhost:8080/getcases',  // GET
+        getpeople: 'http://localhost:8080/getstudents',  // GET
+        addcase: 'http://localhost:8080/addcase',  // PUT
+        editcase: 'http://localhost:8080/editcase/',  // PUT
+        updatecasedata: 'http://localhost:8080/updatecasedata',  // PUT
+        deletecase: 'http://localhost:8080/deletecase/',  // DELETE
+        getsecondarys: 'http://localhost:8080/getsecondarys',  // GET
+        addsecondary: 'http://localhost:8080/addsecondary',  // PUT
+        editsecondary: 'http://localhost:8080/editsecondary/',  // PUT
+        deletesecondary: 'http://localhost:8080/deletesecondary',  // DELETE
+        urgentxlsx: 'http://localhost:8080/urgentcases/urgent.xlsx',  // GET
+        openxlsx: 'http://localhost:8080/opencases/open.xlsx',  // GET
+        blockedxlsx: 'http://localhost:8080/blockedcases/blocked.xlsx',  // GET
+        awaitingxlsx: 'http://localhost:8080/awaitingcases/awaiting.xlsx',  // GET
+        overviewxlsx: 'http://localhost:8080/caseoverview/cases.xlsx',  // GET
+        exposedxlsx: 'http://localhost:8080/exposedoverview/exposed.xlsx', // GET
         crosssite: true
     },
     production: {
@@ -27,7 +27,7 @@ export const configs = {
         getpeople: '/getstudents',
         addcase: '/addcase',
         editcase: '/editcase/',
-        updatecase: '/updatecase',
+        updatecase: '/updatecasedata',
         deletecase: '/deletecase/',
         getsecondarys: '/getsecondarys',
         addsecondary: '/addsecondary',

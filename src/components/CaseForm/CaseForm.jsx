@@ -14,8 +14,9 @@ class CaseForm extends React.Component {
     super(props);
     this.state = {
         disabled: false,
-        secondaries: {},
+        secondary: [],
         caseId: '',
+        secondaries: {},
         selectedOptions: [],
         secondaryAdded: [],
         secondarySelected: '',
@@ -77,6 +78,26 @@ class CaseForm extends React.Component {
     };
   }
 
+  componentDidMount() {
+    const {getsecondarys} = this.context;
+    fetch(getsecondarys, {method: 'GET', credentials: 'include'})
+    .then(response => response.json())
+    .then(items => {
+       this.setState({secondary: items});
+       //console.log(items);
+    });
+  }
+
+  refreshSecondary() {
+    const {getsecondarys} = this.context;
+    fetch(getsecondarys, {method: 'GET', credentials: 'include'})
+    .then(response => response.json())
+    .then(items => {
+       this.setState({secondary: items});
+       //console.log(items);
+    });
+  }
+
   selectChanged = (e) => {
     console.log(e.target.selectedOptions);
     let value = Array.from(e.target.selectedOptions, option => option.value);
@@ -88,16 +109,15 @@ class CaseForm extends React.Component {
     let value = e.target.value;
     //console.log('changing value ' + value);
     if (this.state.secondarySelected !== '') {
-        let s = {
-            exposedClassOutside: this.state.exposedClassOutside,
-            exposedClassOutsideFirst: this.state.exposedClassOutsideFirst,
-            exposedClass: this.state.exposedClass,
-            exposedClassFirst: this.state.exposedClassFirst,
-            exposedBus: this.state.exposedBus,
-            exposedBusFirst: this.state.exposedBusFirst,
-            exposedOutside: this.state.exposedOutside,
-            exposedCarpool: this.state.exposedCarpool
-        }
+        let s = this.state.secondaries.[this.state.secondarySelected];
+        s.exposedClassOutside = this.state.exposedClassOutside;
+        s.exposedClassOutsideFirst = this.state.exposedClassOutsideFirst;
+        s.exposedClass = this.state.exposedClass;
+        s.exposedClassFirst = this.state.exposedClassFirst;
+        s.exposedBus = this.state.exposedBus;
+        s.exposedBusFirst = this.state.exposedBusFirst;
+        s.exposedOutside = this.state.exposedOutside;
+        s.exposedCarpool = this.state.exposedCarpool;
         let secs = this.state.secondaries;
         secs[this.state.secondarySelected] = s;
         let s2 = this.state.secondaries[value];
@@ -181,8 +201,11 @@ class CaseForm extends React.Component {
     });
     // update the property in case the next action is a submit
     if (this.state.secondarySelected !== '') {
-        let s = this.state.secondaries[this.state.secondarySelected];
-        s.[name] = value;
+        let s = this.state.secondaries;
+        s[this.state.secondarySelected].[name] = value;
+        this.setState({
+            secondaries: s
+        });
     }
     //console.log(name + " " + value);
   }
@@ -201,10 +224,43 @@ class CaseForm extends React.Component {
     console.log(name + " " + value);
   }
 
+  resetSecondary = () => {
+    this.setState({
+        secondaries: {},
+        selectedOptions: [],
+        secondaryAdded: [],
+        secondarySelected: '',
+        caseSelect: this.props.cases[0].id,
+        exposedClassOutside: false,
+        exposedClassOutsideFirst: false,
+        exposedClass: false,
+        exposedClassFirst: false,
+        exposedBus: false,
+        exposedBusFirst: false,
+        exposedCarpool: false,
+        exposedOutside: false
+    });
+  }
+
   clearCaseData = () => {
     //console.log(this.state);
     this.setState({
+        disabled: false,
         caseId : '',
+        secondaries: {},
+        selectedOptions: [],
+        secondaryAdded: [],
+        secondarySelected: '',
+//        caseSelect: this.props.cases[0].id,
+        showClosed: false,
+        exposedClassOutside: false,
+        exposedClassOutsideFirst: false,
+        exposedClass: false,
+        exposedClassFirst: false,
+        exposedBus: false,
+        exposedBusFirst: false,
+        exposedCarpool: false,
+        exposedOutside: false,
         preparedBy: '',
         primaryStudent: this.props.people[0].id,
         exposureType: 0,
@@ -259,10 +315,12 @@ class CaseForm extends React.Component {
     .then(data => {
         if (this.props.onDelete) this.props.onDelete();
         alert('Deleted case ' + this.state.caseSelect);
-    });
+        if (this.state.caseId == this.state.caseSelect) this.clearCaseData();
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      });
   }
 
   loadCase = () => {
+    this.clearCaseData();
     let ccase = this.props.cases.filter(c => c.id == this.state.caseSelect)[0];
     this.setState({
       caseId: ccase.id,
@@ -274,7 +332,7 @@ class CaseForm extends React.Component {
       certainty: ccase.certainty,
       contactReason: ccase.contactReason,
       epiHighRisk: ccase.epiHighRisk,
-      exposingStudent: (ccase.exposingStudent === null ? 0 : ccase.exposingStudent.id),
+      exposingStudent: (ccase.exposingStudent === null ? 0 : ccase.exposingStudent.id+''),
       hasSymptoms: (ccase.hasSymptoms === true ? 1 : 2),
       hasFever: ccase.hasFever,
       hasCough: ccase.hasCough,
@@ -311,7 +369,44 @@ class CaseForm extends React.Component {
       administrativeCase: ccase.administrativeCase,
       notes: ccase.notes
     });
-    //console.log(ccase);
+    let secs = {};
+    let added = [];
+    this.state.secondary.filter(s => s.primaryCase.id == this.state.caseSelect).forEach((s) => {
+       secs[s.student.id+''] = s;
+       added.push(s.student.id+'');
+    });
+    this.setState({
+       secondaries: secs,
+       secondaryAdded: added
+    });
+    console.log(secs);
+    console.log(this.state.secondary);
+    if (added.length > 0) {
+        let s = added[0];
+        this.setState({
+                secondarySelected: s,
+                exposedClassOutside: secs[s].exposedClassOutside,
+                exposedClassOutsideFirst: secs[s].exposedClassOutsideFirst,
+                exposedClass: secs[s].exposedClass,
+                exposedClassFirst: secs[s].exposedClassFirst,
+                exposedBus: secs[s].exposedBus,
+                exposedBusFirst: secs[s].exposedBusFirst,
+                exposedOutside: secs[s].exposedOutside,
+                exposedCarpool: secs[s].exposedCarpool
+        });
+    } else {
+        this.setState({
+                secondarySelected: '',
+                exposedClassOutside: false,
+                exposedClassOutsideFirst: false,
+                exposedClass: false,
+                exposedClassFirst: false,
+                exposedBus: false,
+                exposedBusFirst: false,
+                exposedOutside: false,
+                exposedCarpool: false
+        });
+    }
   }
 
   updateInfo = () => {
@@ -374,20 +469,30 @@ class CaseForm extends React.Component {
     delete data.disabled;
     data.hasSymptoms = (data.hasSymptoms === '1' ? true:false);
 
-    console.log(data);
-    const {addcase} = this.context;
-    fetch(addcase, {
+    let casedata = {cCase: data, secondaryList: []};
+
+    let exposed = this.state.secondaries;
+
+    for (const s in exposed) {
+        casedata.secondaryList.push(exposed[s]);
+        if (this.state.caseId != '') casedata.secondaryList[casedata.secondaryList.length-1].primaryCase = {id: this.state.caseId};
+        casedata.secondaryList[casedata.secondaryList.length-1].student = {id: s};
+    }
+    console.log(casedata);
+    const {updatecasedata} = this.context;
+    fetch(updatecasedata, {
         headers: {
                   'Content-Type': 'application/json'
                  },
         credentials: 'include',
         method: 'PUT',
-        body: JSON.stringify(data)
+        body: JSON.stringify(casedata)
     })
-    .then(response => response.text())
-    .then(info => {
-        alert('Your case has been submitted and its case number is ' + info);
-        this.setState({disabled: false, caseSelect: info});
+    .then(response => response.json())
+    .then(data => {
+        alert('Your case has been submitted and its case number is ' + data.id);
+        this.refreshSecondary();
+        this.setState({disabled: false, caseSelect: data.id});
         this.clearCaseData();
         if (this.props.onSubmit) this.props.onSubmit();
     }).catch((error) => {
@@ -427,7 +532,7 @@ class CaseForm extends React.Component {
         return;
     }
     this.setState({disabled: true});
-    let data = {...this.state};
+    let data = {...this.state, id: this.state.caseId};
     data.primaryStudent = {id: data.primaryStudent};
     if (data.exposingStudent !== '0') {
         data.exposingStudent = {id: data.exposingStudent};
@@ -438,19 +543,30 @@ class CaseForm extends React.Component {
     delete data.disabled;
     data.hasSymptoms = (data.hasSymptoms === '1' ? true:false);
 
-    console.log(data);
-    const {editcase} = this.context;
-    fetch(editcase+data.caseId, {
+    let casedata = {cCase: data, secondaryList: []};
+
+    let exposed = this.state.secondaries;
+
+    for (const s in exposed) {
+        casedata.secondaryList.push(exposed[s]);
+        if (this.state.caseId != '') casedata.secondaryList[casedata.secondaryList.length-1].primaryCase = {id: this.state.caseId};
+        casedata.secondaryList[casedata.secondaryList.length-1].student = {id: s};
+    }
+
+    console.log(casedata);
+    const {updatecasedata} = this.context;
+    fetch(updatecasedata, {
         headers: {
                   'Content-Type': 'application/json'
                  },
         credentials: 'include',
         method: 'PUT',
-        body: JSON.stringify(data)
+        body: JSON.stringify(casedata)
     })
     .then(response => response.json())
     .then(data => {
         alert('Your case has been updated and its case number is ' + data.id);
+        this.refreshSecondary();
         this.setState({disabled: false});
         //this.clearCaseData();
         if (this.props.onSubmit) this.props.onSubmit();

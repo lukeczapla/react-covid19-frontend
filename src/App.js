@@ -166,8 +166,9 @@ class App extends Component {
           <br/><PersonInfo name="PersonInfo" person={this.state.personInfo} cases={this.state.cases}/>
           <button onClick={this.refresh}>Refresh Data</button>
           {this.state.people.length > 0 ? <CaseForm addName={this.addName} onDelete={this.refresh} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />: null}
-          <PlotStatistics cases={this.state.cases}/>
-          <Reporting/>
+          {this.state.people.length > 0 ?
+          <><PlotStatistics cases={this.state.cases}/>
+          <Reporting/></> : null}
           <br/><br/>
           <hr/>
           <h4>Pandemic Simulation Demo</h4>
