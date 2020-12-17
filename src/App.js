@@ -5,6 +5,8 @@ import React, { Component, useState } from 'react';
 
 import Game from './components/Game/Game.jsx';
 import Simulation from './components/Simulation/Simulation.jsx';
+import Menu from './components/Menu/Menu.jsx';
+
 
 import PersonList from './components/PersonList/PersonList';
 import CaseList from './components/CaseList/CaseList';
@@ -16,8 +18,9 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { ApiContext } from './api-context';
 
 const HelloDialog = ({name, picture}) => {
+    console.log(picture);
     return (
-      <div><img src={picture} alt="profile" width="25" height="25"/>Hello {name}</div>
+      <div><img src={picture} alt="pic" width="25" height="25"/>Hello {name}</div>
     );
 };
 
@@ -51,11 +54,17 @@ class App extends Component {
     super(props);
     this.state = {
         profile: null,
+        menuitem: 'sim',
         people: [],
         cases: [],
         v: 0,
         showClosed: false
     };
+    this.names = ["Info", "Cases", "Plots", "Excel", "Simulation", "Games"];
+    this.access = {};
+    this.names.forEach((value) => {
+      this.access.[value] = true;
+    })
   }
 
   componentDidMount() {
@@ -63,9 +72,12 @@ class App extends Component {
         "Welcome" : "Welcome " + this.state.profile.givenName + " " + this.state.profile.familyName);
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     document.title = (this.state.profile === null ?
         "Welcome" : "Welcome " + this.state.profile.givenName + " " + this.state.profile.familyName);
+    ["Info", "Cases", "Plots", "Excel"].forEach((value) => {
+      this.access[value] = (this.state.profile !== null ? true: false);
+    });
   }
 
   componentWillUnmount() {
@@ -75,10 +87,22 @@ class App extends Component {
     //ReactDOM.unmountComponentAtNode(document.getElementById('caselist2'));
   }
 
+  itemChanged = (event) => {
+    const name = event.target.name;
+    if (name === "Info") this.setState({menuitem: "info"});
+    if (name === "Cases") this.setState({menuitem: "cases"});
+    if (name === "Plots") this.setState({menuitem: "plot"});
+    if (name === "Excel") this.setState({menuitem: "excel"});
+    if (name === "Simulation") this.setState({menuitem: "sim"});
+    if (name === "Games") this.setState({menuitem: "game"});
+
+  }
+
   inputChanged = (event) => {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+    console.log(name + ' ' + value);
     this.setState({
       [name]: value
     });
@@ -128,7 +152,7 @@ class App extends Component {
          {headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
           method: 'POST', credentials: 'include', body: JSON.stringify(user)})
     .then((info) => {
-        this.setState({profile: data.profileObj});
+        this.setState({profile: data.profileObj, menuitem: 'info'});
     }).catch((error) => {
         console.log(error);
     });
@@ -138,7 +162,7 @@ class App extends Component {
   emptyFunction = () => {
     const {userlogin} = this.context;
     fetch(userlogin, { method: 'DELETE' });
-    this.setState({profile: null, cases: [], people: []});
+    this.setState({profile: null, cases: [], people: [], menuitem: 'sim'});
   };
 
   refresh = () => {
@@ -147,37 +171,74 @@ class App extends Component {
     });
   }
 
+  menu() {
+    if (this.state.menuitem === 'info')
+      return (<><br/><PersonInfo className={this.state.menuitem !== 'info' ? 'hidden-values' :''} name="PersonInfo" person={this.state.personInfo} cases={this.state.cases}/></>);
+    if (this.state.menuitem === 'sim')
+        return (<>
+          <h4>Pandemic Simulation Demo</h4>
+          <Simulation/>
+        </>);
+    if (this.state.menuitem == 'cases')
+        return (
+            <>
+            <button onClick={this.refresh}>Refresh Data</button>
+            <CaseForm addName={this.addName} onDelete={this.refresh} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />
+            </>
+        );
+    if (this.state.menuitem == 'plot')
+        return (
+            <>
+            <PlotStatistics cases={this.state.cases}/>
+            </>
+        );
+    if (this.state.menuitem == 'excel')
+        return (
+            <>
+            <Reporting/>
+            </>
+        );
+    if (this.state.menuitem == 'game')
+        return (
+            <>
+              <p>How about a nice game of tic-tac-toe?</p>
+              <Game/>
+            </>
+        );
+  }
+
   render() {
       return (
         <div className="App">
           <header className="App-header">
-            <img src={logo} width="200" height="200" className="App-logo" alt="logo" />
-            <p>
+          <Menu access={this.access} onItem={this.itemChanged} itemNames={this.names}/>
+            {/*<img src={logo} width="200" height="200" className="App-logo" alt="logo" />*/}
+            <p className="titlep">
               COVID Tracking and Simulation Demo
             </p>
             <Login onLoad={this.loadFunction} onEmpty={this.emptyFunction} />
             {this.state.profile === null ? <div>Not logged in</div> : <div>Logged in</div>}
             {this.state.profile !== null ? <HelloDialog name={this.state.profile.givenName} picture={this.state.profile.imageUrl}/>: null}
+            <select name='menuitem' value={this.state.menuitem} onChange={this.inputChanged}>
+                {this.state.people.length > 0 ?
+                    <><option key="info" value="info">Person/Case Information</option>
+                    <option key="cases" value="cases">Add/Edit Case Information</option>
+                    <option key="plot" value="plot">Plot Statistics</option>
+                    <option key="excel" value="excel">Obtain Case Report (Spreadsheets)</option>
+                    </>: null}
+                <option key="sim" value="sim">Simulation Demo</option>
+                <option key="game" value="game">Games</option>
+            </select>
           </header>
           <div className='App-body'>
-          <b>Find Person Information by name or by case</b><br/>
-          {this.state.profile !== null ? <PersonList defaultEmpty='--- SELECT A PERSON ---' name="personList1" value={this.state.personList1} onFetch={this.loadPeople} onChange={this.inputChanged} v={this.state.v}/> : null}
-          {this.state.profile !== null ? <CaseList defaultEmpty='--- SELECT A CASE ---' name="caseList1" onFetch={this.loadCases} onChange={this.inputChanged} v={this.state.v}/> : null}
-          <br/><PersonInfo name="PersonInfo" person={this.state.personInfo} cases={this.state.cases}/>
-          <button onClick={this.refresh}>Refresh Data</button>
-          {this.state.people.length > 0 ? <CaseForm addName={this.addName} onDelete={this.refresh} cases={this.state.cases} onSubmit={this.refresh} people={this.state.people} />: null}
-          {this.state.people.length > 0 ?
-          <><PlotStatistics cases={this.state.cases}/>
-          <Reporting/></> : null}
-          <br/><br/>
-          <hr/>
-          <h4>Pandemic Simulation Demo</h4>
-          <Simulation/>
-          <hr/>
-          <p>How about a nice game of tic-tac-toe?</p>
-          <Game/>
+            {this.state.profile !== null ? <div className={this.state.menuitem !== 'info' ? 'hidden-values' :''}>
+              <b>Find Person Information by name or by case</b><br/>
+              <PersonList className={this.state.menuitem !== 'info' ? 'hidden-values' :''} defaultEmpty='--- SELECT A PERSON ---' name="personList1" value={this.state.personList1} onFetch={this.loadPeople} onChange={this.inputChanged} v={this.state.v}/>
+              <CaseList className={this.state.menuitem !== 'info' ? 'hidden-values' :''} defaultEmpty='--- SELECT A CASE ---' name="caseList1" onFetch={this.loadCases} onChange={this.inputChanged} v={this.state.v}/>
+              </div> : null}
+            {this.menu()}
           </div>
-          <footer>Luke Czapla</footer>
+          <footer>Code created by Luke Czapla for demonstration non-production use</footer>
         </div>
       );
   }
