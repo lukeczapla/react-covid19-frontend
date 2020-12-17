@@ -20,9 +20,11 @@ class Simulation extends Component {
         this.state = {
             startshown: true,
             stopshown: false,
+            nographics: false,
             makeplot: false,
             canvasWidth: 600,
-            canvasHeight: 600
+            canvasHeight: 600,
+            dataY: []
         }
         this.cref = React.createRef();
         this.ctx = null;
@@ -30,6 +32,8 @@ class Simulation extends Component {
         this.N = 0;
         this.people = [];
     }
+
+    inputChanged
 
     draw(t) {
             this.ctx.beginPath();
@@ -70,6 +74,68 @@ class Simulation extends Component {
              data: [{y: this.state.dataY, type: 'scatter', line: { width: 3 }}],
              revision: this.timestep
         });
+    }
+
+
+    simulateSteps(Nt) {
+
+        this.setState({ dataY: [] });
+        let healthy = 0, sick = 0, better = 0;
+        this.max = 0;
+        for (let timestep = 0; timestep < Nt; timestep++) {
+        healthy = 0; sick = 0; better = 0;
+        for (let i = 0; i < this.N; i++) {
+            if (this.people[i][2] == HEALTHY) healthy++;
+            if (this.people[i][2] == INFECTED) sick++;
+            if (this.people[i][2] == RECOVERED) better++;
+            if (this.socialT == timestep && i != 0 && Math.random() < this.p_d)
+                this.people[i][4] = true;
+            if (!this.people[i][4]) {
+                this.people[i][0] += (6*(Math.random() - 0.5));
+                if (this.people[i][0] < 0) this.people[i][0] = 0;
+                if (this.people[i][0] > 600) this.people[i][0] = 600;
+                this.people[i][1] += (6*(Math.random() - 0.5));
+                if (this.people[i][1] < 0) this.people[i][1] = 0;
+                if (this.people[i][1] > 600) this.people[i][1] = 600;
+            }
+            if (this.people[i][2] == INFECTED && timestep >= this.people[i][3]+this.tr) this.people[i][2] = RECOVERED;
+        }
+
+        //dataX.push(timestep);
+        if (sick+better > this.max) this.max = sick+better;
+        this.state.dataY.push(sick+better);
+
+        for (let i = 0; i < this.N; i++) {
+          if (this.people[i][2] == HEALTHY) {
+
+            for (let j = 0; j < this.N && this.people[i][2] == HEALTHY; j++) {
+                if (this.people[j][2] == INFECTED) {
+
+                    if (distance(this.people[i], this.people[j]) < 6+this.dist) {
+                        if (Math.random() < this.p_i) {
+                          if (this.people[i][4]) {
+                            if (Math.random() > this.efficacy) {
+                              this.people[i][2] = INFECTED;
+                              this.people[i][3] = timestep;
+                            }
+                          }
+                          else {
+                            this.people[i][2] = INFECTED;
+                            this.people[i][3] = timestep;
+                          }
+
+                        }
+                    }
+
+                }
+            }
+
+          }
+        }
+        }
+        document.getElementById('info').innerHTML = "Step " + Nt + ": " + healthy+" healthy, " + sick + " sick, and " + better + " recovered";
+        this.plot();
+        this.people.length = 0;
     }
 
 
@@ -154,6 +220,7 @@ class Simulation extends Component {
         this.p_d = parseInt(document.getElementById('psocial').value)/100.0;
         this.efficacy = parseFloat(document.getElementById('efficacy').value);
         this.socialT = parseInt(document.getElementById('socialT').value);
+        this.nographics = document.getElementById('nographics').checked;
 
         this.timestep = 0;
         this.setState({dataY: []});
@@ -182,12 +249,14 @@ class Simulation extends Component {
 
             }
 
-            //if (nographics) simulateSteps(1100);
-            this.timer = setInterval(()=>this.animate(), 200);
-            this.setState({
-                startshown: false,
-                stopshown: true
-            });
+            if (this.nographics) this.simulateSteps(1100);
+            else {
+                this.timer = setInterval(()=>this.animate(), 200);
+                this.setState({
+                   startshown: false,
+                   stopshown: true
+                });
+            }
         }
     }
 
@@ -200,25 +269,37 @@ class Simulation extends Component {
         });
     }
 
+    inputChanged = (event) => {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+        console.log(name + ' ' + value);
+        this.setState({
+          [name]: value
+        });
+    }
+
     render() {
         return(
             <div>
-             <label>Number of people</label> <input type="number" step="1" defaultValue="1000" id="Npeople"/>
+             <label>Number of people</label> <input type="number" step="1" defaultValue="1000" id="Npeople"/><br/>
              <label>Percent initially infected</label> <input type="number" step="1" defaultValue="0" id="pinfected"/>
              <br/>
-             <label>Infection distance</label> <input type="number" step="1" defaultValue="6" id="dinfection"/>
+             <label>Infection distance</label> <input type="number" step="1" defaultValue="6" id="dinfection"/><br/>
              <label>Infection probability</label><input type="number" step="0.01" defaultValue="0.1" id="pinfection"/>
              <br/>
-             <label>Recovery time</label><input type="number" step="1" defaultValue="100" id="trecovery"/>
+             <label>Recovery time</label><input type="number" step="1" defaultValue="100" id="trecovery"/><br/>
              <br/>
-             <label>Social distance (%)</label><input type="number" step="1" defaultValue="0" id="psocial"/>
-             <label>Efficacy</label><input type="number" step="0.01" defaultValue="0.8" id="efficacy"/>
-             <label>Start at time</label><input type="number" step="1" defaultValue="0" id="socialT"/>
+             <label>Social distance (%)</label><input type="number" step="1" defaultValue="0" id="psocial"/><br/>
+             <label>Efficacy</label><input type="number" step="0.01" defaultValue="0.8" id="efficacy"/><br/>
+             <label>Start at time</label><input type="number" step="1" defaultValue="0" id="socialT"/><br/>
+             <label>Run without graphics (plot result only)</label><input type='checkbox' checked={this.state.nographics} className='checkbox' onChange={this.inputChanged} name='nographics' id='nographics'/>
              <br/>
-             <canvas ref={this.cref} width={this.state.canvasWidth} height={this.state.canvasHeight} className="sim-window"></canvas>
              <div id="info">{this.state.info}</div>
              {this.state.startshown ? <button onClick={() => this.runSimulation()}>Start Simulation</button> : null}
              {this.state.stopshown ? <button onClick={() => this.stopSimulation()}>Stop Simulation</button> : null}
+             <br/>
+             <canvas ref={this.cref} width={this.state.canvasWidth} height={this.state.canvasHeight} className="sim-window" style={{visibility: this.state.nographics ? 'hidden' : 'visible', width: (this.state.nographics ? '0px': '600px'), height: (this.state.nographics ? '0px': '600px') }}></canvas>
              <br/>
              {this.state.makeplot ? <Plot layout={this.state.layout} data={this.state.data} revision={this.state.revision} /> : null}
             </div>
